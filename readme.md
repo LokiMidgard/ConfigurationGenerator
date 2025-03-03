@@ -10,7 +10,7 @@ It is meant to be used with the `Microsoft.Extensions.Configuration` library and
 
 Define your class that will hold the configuration:
 ```csharp
-[ConfigurationGenerator.GenerateConfigurationAccessors("config-definition.json", nameof(configuration))]
+[SourceGenerator.Configuration.GenerateConfigurationPropertiesAttribute("config-definition.json", nameof(configuration))]
 public partial class MyConfiguration(IConfiguration configuration)
 {
 }
@@ -75,7 +75,7 @@ namespace MyNamespcae
 
 
         public int? SomeIntValue => config.GetValue<int?>("some-int-value");
-        public string SomeRequiredString => config.GetValue<string?>("some-required-string") ?? throw new global::ConfigurationGenerator.MissingConfigurationException(":some-required-string");
+        public string SomeRequiredString => config.GetValue<string?>("some-required-string") ?? throw new global::SourceGenerator.Configuration.MissingConfigurationException(":some-required-string");
         int MyConfiguration.ISomeNestedProperties.NestedInt => config.GetValue<int?>("some-nested-properties:nested-int") ?? 42;
     }
 }

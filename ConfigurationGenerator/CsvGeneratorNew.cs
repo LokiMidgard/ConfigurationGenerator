@@ -12,12 +12,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Newtonsoft.Json.Linq;
 
+namespace SourceGenerator.Configuration;
 
-namespace ConfigurationGenerator;
 [SourceGenerator.Helper.CopyCode.Copy]
 [System.AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
 #pragma warning disable CS9113 // Parameter is unread.
-internal sealed class GenerateConfigurationAccessorsAttribute(string path, string iConfigurationVariable) : Attribute {
+internal sealed class GenerateConfigurationPropertiesAttribute(string path, string IConfigurationVariable) : Attribute {
 #pragma warning restore CS9113 // Parameter is unread.
 }
 
@@ -38,13 +38,13 @@ internal class MissingConfigurationException : Exception {
 [Generator]
 public class ConfiguationvGeneratord : ISourceGenerator {
 
-    public static string AttrbuteDisplayName => $"{nameof(ConfigurationGenerator)}.{nameof(ConfigurationGenerator.GenerateConfigurationAccessorsAttribute)}";
+    public static string AttrbuteDisplayName => $"SourceGenerator.Configuration.{nameof(SourceGenerator.Configuration.GenerateConfigurationPropertiesAttribute)}";
 
     public void Initialize(GeneratorInitializationContext context) {
         // Register the attribute source
         context.RegisterForPostInitialization((i) => {
-            i.AddSource($"Attribute.g.cs", SourceGenerator.Helper.CopyCode.Copy.ConfigurationGeneratorGenerateConfigurationAccessorsAttribute);
-            i.AddSource($"Exception.g.cs", SourceGenerator.Helper.CopyCode.Copy.ConfigurationGeneratorMissingConfigurationException);
+            i.AddSource($"Attribute.g.cs", SourceGenerator.Helper.CopyCode.Copy.SourceGeneratorConfigurationGenerateConfigurationPropertiesAttribute);
+            i.AddSource($"Exception.g.cs", SourceGenerator.Helper.CopyCode.Copy.SourceGeneratorConfigurationMissingConfigurationException);
         });
 
         // Register a syntax receiver that will be created for each generation pass

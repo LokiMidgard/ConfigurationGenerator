@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 
-namespace CSVParserGenerator.Test.TestData;
+namespace SourceGenerator.Configuration.Test.TestData;
 
-[ConfigurationGenerator.GenerateConfigurationAccessors("test.json", nameof(config))]
+[SourceGenerator.Configuration.GenerateConfigurationPropertiesAttribute("test.json", nameof(config))]
 internal partial class TestParsers(ConfigDumy config) {
 }
 
@@ -15,7 +15,7 @@ internal class ConfigDumy {
         if (Data.TryGetValue(key, out var value)) {
             return (T)value;
         }
-        return default;
+        return default!;
     }
 
 }

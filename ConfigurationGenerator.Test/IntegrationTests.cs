@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
-using CSVParserGenerator.Test.TestData;
+using SourceGenerator.Configuration.Test.TestData;
 
-namespace ConfigurationGenerator.Test;
+namespace SourceGenerator.Configuration.Test;
 
 public class IntegrationTests {
 

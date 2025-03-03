@@ -12,7 +12,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<PackageId>ConfigurationGenerator</PackageId>
+		<PackageId>SourceGenerator.Configuration</PackageId>
 		<Authors>Patrick Kranz</Authors>
 		<PackageLicenseExpression>Unlicense</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
