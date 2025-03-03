@@ -23,9 +23,12 @@
 		<Description>
 			A helper Source Generator, to generate a strongly typed configuration from a json file.
 
-			It is meant to be used with the `Microsoft.Extensions.Configuration` library and its `IConfiguration` interface.</Description>
+			It is meant to be used with the `Microsoft.Extensions.Configuration` library and its `IConfiguration` interface.
+		</Description>
 
-	
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/LokiMidgard/ConfigurationGenerator.git</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/LokiMidgard/ConfigurationGenerator?tab=readme-ov-file#configurationgenerator</PackageProjectUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
