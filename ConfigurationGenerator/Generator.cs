@@ -302,7 +302,7 @@ namespace {{namespaceName}}
                 if (defaultValue is not null) {
                     source.AppendLine($"    {modifier}{type} {propName} => {configurationVariable}.GetValue<{type}?>(\"{jsonName}\") ?? {defaultValue};");
                 } else if (required) {
-                    source.AppendLine($"    {modifier}{type} {propName} => {configurationVariable}.GetValue<{type}?>(\"{jsonName}\") ?? throw new global::ConfigurationGenerator.MissingConfigurationException(\"{jsonPrefix}:{name}\");");
+                    source.AppendLine($"    {modifier}{type} {propName} => {configurationVariable}.GetValue<{type}?>(\"{jsonName}\") ?? throw new global::SourceGenerator.Configuration.MissingConfigurationException(\"{jsonPrefix}:{name}\");");
                 } else {
                     source.AppendLine($"    {modifier}{type}? {propName} => {configurationVariable}.GetValue<{type}?>(\"{jsonName}\");");
                 }

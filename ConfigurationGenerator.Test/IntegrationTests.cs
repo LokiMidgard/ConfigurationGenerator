@@ -13,7 +13,7 @@ public class IntegrationTests {
     [Fact]
     public void TestWithoutHeader() {
         var dumy = new ConfigDumy();
-        dumy.Data.Add("subSpace:requiredValue", 10);
+        dumy.Data.Add("sub-space:required-value", 10);
         var TestParsers = new TestParsers(dumy);
 
         Assert.Equal(5, TestParsers.SubSpace.SubValue);
