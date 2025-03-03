@@ -1,0 +1,25 @@
+﻿{
+  "$schema": "../../ConfigurationGenerator/configurationDefinition.schema.json",
+  "TestRootValue": {
+    "type": "string"
+  },
+  "sub-space": {
+    "type": "namespace",
+    "description": "Some nested Property",
+    "children": {
+      "sub_value": {
+        "type": "int",
+        "default": 5
+      },
+      "required-value": {
+        "type": "int",
+        "required": true
+      },
+      "requiredValue-with-default": {
+        "type": "int",
+        "required": true,
+        "default": 8
+      }
+    }
+  }
+}
