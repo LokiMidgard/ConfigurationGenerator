@@ -17,7 +17,7 @@
               "double",
               "decimal",
               "float",
-              "boolean"
+              "bool"
             ]
           },
           "required": {
