@@ -1,8 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Configurationgenerator",
-  "description": "Configuration for the generator",
+  "title": "List of object members",
+  "description": "The list of members that will be generated for the Object",
   "type": "object",
+  
   "additionalProperties": {
     "oneOf": [
       {
@@ -24,7 +25,19 @@
             "type": "boolean",
             "default": false
           },
-          "default": {},
+          "default": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
           "description": {
             "type": "string"
           }
@@ -38,6 +51,7 @@
         "properties": {
           "type": {
             "type": "string",
+            "description": "Defines a group of key values and/or other groups",
             "enum": [
               "namespace"
             ]
@@ -45,13 +59,13 @@
           "description": {
             "type": "string"
           },
-          "children": {
+          "members": {
             "$ref": "#"
           }
         },
         "required": [
           "type",
-          "children"
+          "members"
         ]
       }
     ]

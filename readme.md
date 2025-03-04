@@ -33,7 +33,7 @@ The `config-definition.json` file could look like this:
   "some-nested-properties": {
     "type": "namespace",
     "description": "Some nested Property",
-    "children": {
+    "members": {
       "nested-int": {
         "type": "int",
         "default": 42

@@ -6,7 +6,7 @@
   "sub-space": {
     "type": "namespace",
     "description": "Some nested Property",
-    "children": {
+    "members": {
       "sub_value": {
         "type": "int",
         "default": 5

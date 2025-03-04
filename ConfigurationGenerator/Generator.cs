@@ -97,7 +97,7 @@ public class ConfiguationvGeneratord : ISourceGenerator {
         // get the fields to be generated
         ConfigurationDescriptionNamespace ParseConfiguration(string? name, string? description, JObject obj) {
             var result = new ConfigurationDescriptionNamespace(name, description);
-            var children = obj.Properties().Select(x => x.Type);
+            var members = obj.Properties().Select(x => x.Type);
 
 
             foreach (var property in obj.Properties().Where(x => x.Value.Type == JTokenType.Object)) {
@@ -109,11 +109,11 @@ public class ConfiguationvGeneratord : ISourceGenerator {
                 }
                 var typeString = type.Value<string>();
                 if (typeString is "namespace") {
-                    if (!child.TryGetValue("children", out var subChildren)) {
-                        throw new InvalidOperationException($"Missing children in {childName}");
+                    if (!child.TryGetValue("members", out var subChildren)) {
+                        throw new InvalidOperationException($"Missing members in {childName}");
                     }
                     if (subChildren is not JObject subChildObject) {
-                        throw new InvalidOperationException($"children is not an object in {childName}");
+                        throw new InvalidOperationException($"members is not an object in {childName}");
                     }
                     var ns = ParseConfiguration(property.Name, child.Value<string?>("description"), subChildObject);
                     result.Namespaces.Add(ns);
