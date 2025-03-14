@@ -381,8 +381,17 @@ namespace {{namespaceName}}
                 jsonSchema.AppendLine($"{indentString}    \"{ns.Name}\": {{");
                 indentString = new string(' ', (indent + 1) * 4);
                 jsonSchema.AppendLine($"{indentString}    \"type\": \"object\",");
-                if(IsRequired(ns))
-                    jsonSchema.AppendLine($"{indentString}    \"required\": true,");
+
+                var requiredProperties = ns.Ints.Where(x => x.Required).Select(x => x.Name)
+                                            .Concat(ns.Strings.Where(x => x.Required).Select(x => x.Name))
+                                            .Concat(ns.Bools.Where(x => x.Required).Select(x => x.Name))
+                                            .Concat(ns.Doubles.Where(x => x.Required).Select(x => x.Name))
+                                            .Concat(ns.Longs.Where(x => x.Required).Select(x => x.Name))
+                                            .Concat(ns.Floats.Where(x => x.Required).Select(x => x.Name))
+                                            .Concat(ns.Decimals.Where(x => x.Required).Select(x => x.Name))
+                                            .Concat(ns.Namespaces.Where(IsRequired).Select(x => x.Name));
+
+                jsonSchema.AppendLine($"{indentString}    \"required\": [{string.Join(", ",requiredProperties)}],");
                 bool isFirst = true;
                 if (ns.Description != null)
                     WriteDescription(ns.Description);
@@ -397,7 +406,7 @@ namespace {{namespaceName}}
                     if (item.Description != null)
                         WriteDescription(item.Description);
                     jsonSchema.AppendLine($"{indentString}        \"type\": \"integer\",");
-                    if(item.DefaultValue.HasValue)
+                    if (item.DefaultValue.HasValue)
                         jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
                     jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
                     jsonSchema.AppendLine($"{indentString}    }}");
@@ -507,6 +516,7 @@ namespace {{namespaceName}}
 
                     WriteJsonSchema(child, indent + 1);
                 }
+                jsonSchema.AppendLine($"{indentString}\"required\": [{string.Join(", ", ns.Namespaces.Where(IsRequired).Select(x => x.Name))}]");
             }
         }
         jsonSchema.AppendLine("""
