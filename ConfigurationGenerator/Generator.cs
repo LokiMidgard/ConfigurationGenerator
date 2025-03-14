@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace SourceGenerator.Configuration;
@@ -331,46 +332,46 @@ namespace {{namespaceName}}
             }
         }
 
+        static bool IsRequired(ConfigurationDescriptionNamespace ns) {
+            foreach (var item in ns.Ints) {
+                if (item.Required)
+                    return true;
+            }
+            foreach (var item in ns.Strings) {
+                if (item.Required)
+                    return true;
+            }
+            foreach (var item in ns.Bools) {
+                if (item.Required)
+                    return true;
+            }
+            foreach (var item in ns.Doubles) {
+                if (item.Required)
+                    return true;
+            }
+            foreach (var item in ns.Longs) {
+                if (item.Required)
+                    return true;
+            }
+            foreach (var item in ns.Floats) {
+                if (item.Required)
+                    return true;
+            }
+            foreach (var item in ns.Decimals) {
+                if (item.Required)
+                    return true;
+            }
+            foreach (var child in ns.Namespaces) {
+                if (IsRequired(child))
+                    return true;
+            }
+            return false;
+        }
 
 
         StringBuilder jsonSchema = new StringBuilder();
         void WriteJsonSchema(ConfigurationDescriptionNamespace ns, int indent) {
 
-            bool IsRequired(ConfigurationDescriptionNamespace ns) {
-                foreach (var item in ns.Ints) {
-                    if (item.Required)
-                        return true;
-                }
-                foreach (var item in ns.Strings) {
-                    if (item.Required)
-                        return true;
-                }
-                foreach (var item in ns.Bools) {
-                    if (item.Required)
-                        return true;
-                }
-                foreach (var item in ns.Doubles) {
-                    if (item.Required)
-                        return true;
-                }
-                foreach (var item in ns.Longs) {
-                    if (item.Required)
-                        return true;
-                }
-                foreach (var item in ns.Floats) {
-                    if (item.Required)
-                        return true;
-                }
-                foreach (var item in ns.Decimals) {
-                    if (item.Required)
-                        return true;
-                }
-                foreach (var child in ns.Namespaces) {
-                    if (IsRequired(child))
-                        return true;
-                }
-                return false;
-            }
 
             var indentString = new string(' ', indent * 4);
             void WriteDescription(string description) {
@@ -390,9 +391,9 @@ namespace {{namespaceName}}
                                             .Concat(ns.Floats.Where(x => x.Required).Select(x => x.Name))
                                             .Concat(ns.Decimals.Where(x => x.Required).Select(x => x.Name))
                                             .Concat(ns.Namespaces.Where(IsRequired).Select(x => x.Name))
-                                            .Select(x=>$"\"{x}\"");
+                                            .Select(x => $"\"{x}\"");
 
-                jsonSchema.AppendLine($"{indentString}    \"required\": [{string.Join(", ",requiredProperties)}],");
+                jsonSchema.AppendLine($"{indentString}    \"required\": [{string.Join(", ", requiredProperties)}],");
                 bool isFirst = true;
                 if (ns.Description != null)
                     WriteDescription(ns.Description);
@@ -510,7 +511,6 @@ namespace {{namespaceName}}
 
                     WriteJsonSchema(child, indent + 1);
                 }
-                jsonSchema.AppendLine($",{indentString}\"required\": [{string.Join(", ", ns.Namespaces.Where(IsRequired).Select(x => $"\"{x.Name}\""))}]");
             }
         }
         jsonSchema.AppendLine("""
@@ -521,7 +521,10 @@ namespace {{namespaceName}}
             """);
 
         WriteJsonSchema(root, 1);
-        jsonSchema.AppendLine("    }");
+        jsonSchema.AppendLine("    },");
+
+        jsonSchema.AppendLine($"    \"required\": [{string.Join(", ", root.Namespaces.Where(IsRequired).Select(x => $"\"{x.Name}\""))}]");
+
         jsonSchema.AppendLine("}");
 
         source.AppendLine($""""
