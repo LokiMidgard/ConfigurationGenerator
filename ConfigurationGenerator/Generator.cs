@@ -335,6 +335,43 @@ namespace {{namespaceName}}
 
         StringBuilder jsonSchema = new StringBuilder();
         void WriteJsonSchema(ConfigurationDescriptionNamespace ns, int indent) {
+
+            bool IsRequired(ConfigurationDescriptionNamespace ns) {
+                foreach (var item in ns.Ints) {
+                    if (item.Required)
+                        return true;
+                }
+                foreach (var item in ns.Strings) {
+                    if (item.Required)
+                        return true;
+                }
+                foreach (var item in ns.Bools) {
+                    if (item.Required)
+                        return true;
+                }
+                foreach (var item in ns.Doubles) {
+                    if (item.Required)
+                        return true;
+                }
+                foreach (var item in ns.Longs) {
+                    if (item.Required)
+                        return true;
+                }
+                foreach (var item in ns.Floats) {
+                    if (item.Required)
+                        return true;
+                }
+                foreach (var item in ns.Decimals) {
+                    if (item.Required)
+                        return true;
+                }
+                foreach (var child in ns.Namespaces) {
+                    if (IsRequired(child))
+                        return true;
+                }
+                return false;
+            }
+
             var indentString = new string(' ', indent * 4);
             void WriteDescription(string description) {
                 var linesForDescription = description.Replace("\n", "\\n");
@@ -344,9 +381,13 @@ namespace {{namespaceName}}
                 jsonSchema.AppendLine($"{indentString}    \"{ns.Name}\": {{");
                 indentString = new string(' ', (indent + 1) * 4);
                 jsonSchema.AppendLine($"{indentString}    \"type\": \"object\",");
+                if(IsRequired(ns))
+                    jsonSchema.AppendLine($"{indentString}    \"required\": true,");
                 bool isFirst = true;
                 if (ns.Description != null)
                     WriteDescription(ns.Description);
+                jsonSchema.AppendLine($"{indentString}    \"properties\": {{");
+                indentString = new string(' ', (indent + 2) * 4);
                 foreach (var item in ns.Ints) {
                     if (!isFirst) {
                         jsonSchema.Append(',');
@@ -373,7 +414,7 @@ namespace {{namespaceName}}
                     if (item.DefaultValue is not null)
                         jsonSchema.AppendLine($"{indentString}        \"default\": \"{item.DefaultValue.Replace("\t", "\\t").Replace("\n", "\\n")}\",");
                     jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
-                    jsonSchema.AppendLine($"{indentString}    }},");
+                    jsonSchema.AppendLine($"{indentString}    }}");
                 }
                 foreach (var item in ns.Bools) {
                     if (!isFirst) {
@@ -387,7 +428,7 @@ namespace {{namespaceName}}
                     if (item.DefaultValue.HasValue)
                         jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue.ToString().ToLower()},");
                     jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
-                    jsonSchema.AppendLine($"{indentString}    }},");
+                    jsonSchema.AppendLine($"{indentString}    }}");
                 }
                 foreach (var item in ns.Doubles) {
                     if (!isFirst) {
@@ -453,6 +494,7 @@ namespace {{namespaceName}}
 
                     WriteJsonSchema(child, indent + 1);
                 }
+                indentString = new string(' ', (indent + 1) * 4);
                 jsonSchema.AppendLine($"{indentString}}}");
             } else {
                 bool isFirst = true;
