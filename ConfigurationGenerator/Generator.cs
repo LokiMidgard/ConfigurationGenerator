@@ -333,7 +333,125 @@ namespace {{namespaceName}}
 
 
 
+        StringBuilder jsonSchema = new StringBuilder();
+        void WriteJsonSchema(ConfigurationDescriptionNamespace ns, int indent) {
+            var indentString = new string(' ', indent * 4);
+            void WriteDescription(string description) {
+                var linesForDescription = description.Replace("\n", "\\n");
+                jsonSchema.AppendLine($"{indentString}    \"description\": \"{linesForDescription}\",");
+            }
+            if (ns.Name is not null) {
+                jsonSchema.AppendLine($"{indentString}    \"{ns.Name}\": {{");
+                indentString = new string(' ', (indent + 1) * 4);
+                jsonSchema.AppendLine($"{indentString}    \"type\": \"object\"");
+                if (ns.Description != null)
+                    WriteDescription(ns.Description);
+                foreach (var item in ns.Ints) {
+                    jsonSchema.AppendLine($"{indentString}    \"{item.Name}\": {{");
+                    if (item.Description != null)
+                        WriteDescription(item.Description);
+                    jsonSchema.AppendLine($"{indentString}        \"type\": \"integer\",");
+                    if(item.DefaultValue.HasValue)
+                        jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
+                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
+                    jsonSchema.AppendLine($"{indentString}    }},");
+                }
+                foreach (var item in ns.Strings) {
+                    jsonSchema.AppendLine($"{indentString}    \"{item.Name}\": {{");
+                    if (item.Description != null)
+                        WriteDescription(item.Description);
+                    jsonSchema.AppendLine($"{indentString}        \"type\": \"string\",");
+                    if (item.DefaultValue is not null)
+                        jsonSchema.AppendLine($"{indentString}        \"default\": \"{item.DefaultValue}\",");
+                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
+                    jsonSchema.AppendLine($"{indentString}    }},");
+                }
+                foreach (var item in ns.Bools) {
+                    jsonSchema.AppendLine($"{indentString}    \"{item.Name}\": {{");
+                    if (item.Description != null)
+                        WriteDescription(item.Description);
+                    jsonSchema.AppendLine($"{indentString}        \"type\": \"boolean\",");
+                    if (item.DefaultValue.HasValue)
+                        jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue.ToString().ToLower()},");
+                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
+                    jsonSchema.AppendLine($"{indentString}    }},");
+                }
+                foreach (var item in ns.Doubles) {
+                    jsonSchema.AppendLine($"{indentString}    \"{item.Name}\": {{");
+                    if (item.Description != null)
+                        WriteDescription(item.Description);
+                    jsonSchema.AppendLine($"{indentString}        \"type\": \"number\",");
+                    if (item.DefaultValue.HasValue)
+                        jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
+                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
+                    jsonSchema.AppendLine($"{indentString}    }},");
+                }
+                foreach (var item in ns.Longs) {
+                    jsonSchema.AppendLine($"{indentString}    \"{item.Name}\": {{");
+                    if (item.Description != null)
+                        WriteDescription(item.Description);
+                    jsonSchema.AppendLine($"{indentString}        \"type\": \"integer\",");
+                    if (item.DefaultValue.HasValue)
+                        jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
+                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
+                    jsonSchema.AppendLine($"{indentString}    }},");
+                }
+                foreach (var item in ns.Longs) {
+                    jsonSchema.AppendLine($"{indentString}    \"{item.Name}\": {{");
+                    if (item.Description != null)
+                        WriteDescription(item.Description);
+                    jsonSchema.AppendLine($"{indentString}        \"type\": \"integer\",");
+                    if (item.DefaultValue.HasValue)
+                        jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
+                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
+                    jsonSchema.AppendLine($"{indentString}    }},");
+                }
+                foreach (var item in ns.Decimals) {
+                    jsonSchema.AppendLine($"{indentString}    \"{item.Name}\": {{");
+                    if (item.Description != null)
+                        WriteDescription(item.Description);
+                    jsonSchema.AppendLine($"{indentString}        \"type\": \"number\",");
+                    if (item.DefaultValue.HasValue)
+                        jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
+                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
+                    jsonSchema.AppendLine($"{indentString}    }},");
+                }
+                foreach (var item in ns.Floats) {
+                    jsonSchema.AppendLine($"{indentString}    \"{item.Name}\": {{");
+                    if (item.Description != null)
+                        WriteDescription(item.Description);
+                    jsonSchema.AppendLine($"{indentString}        \"type\": \"number\",");
+                    if (item.DefaultValue.HasValue)
+                        jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
+                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
+                    jsonSchema.AppendLine($"{indentString}    }},");
+                }
+                foreach (var child in ns.Namespaces) {
+                    WriteJsonSchema(child, indent + 1);
+                }
+                jsonSchema.AppendLine($"{indentString}}},");
+            } else {
+                foreach (var child in ns.Namespaces) {
+                    WriteJsonSchema(child, indent + 1);
+                }
+            }
+        }
+        jsonSchema.AppendLine("""
+            {
+                "$schema"": "http://json-schema.org/draft-07/schema#",
+                "type"": "object",
+                "properties": {
+            """);
 
+        WriteJsonSchema(root, 1);
+        jsonSchema.AppendLine("    }");
+        jsonSchema.AppendLine("}");
+
+        source.AppendLine($""""
+        public static string JsonSchema => """
+        {jsonSchema.ToString()}
+        """;    
+        """");
 
 
 
