@@ -510,7 +510,7 @@ namespace {{namespaceName}}
 
                     WriteJsonSchema(child, indent + 1);
                 }
-                jsonSchema.AppendLine($"{indentString}\"required\": [{string.Join(", ", ns.Namespaces.Where(IsRequired).Select(x => $"\"{x.Name}\""))}]");
+                jsonSchema.AppendLine($",{indentString}\"required\": [{string.Join(", ", ns.Namespaces.Where(IsRequired).Select(x => $"\"{x.Name}\""))}]");
             }
         }
         jsonSchema.AppendLine("""
