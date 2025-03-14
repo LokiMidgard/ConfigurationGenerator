@@ -409,7 +409,6 @@ namespace {{namespaceName}}
                     jsonSchema.AppendLine($"{indentString}        \"type\": \"integer\",");
                     if (item.DefaultValue.HasValue)
                         jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
-                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
                     jsonSchema.AppendLine($"{indentString}    }}");
                 }
                 foreach (var item in ns.Strings) {
@@ -423,7 +422,6 @@ namespace {{namespaceName}}
                     jsonSchema.AppendLine($"{indentString}        \"type\": \"string\",");
                     if (item.DefaultValue is not null)
                         jsonSchema.AppendLine($"{indentString}        \"default\": \"{item.DefaultValue.Replace("\t", "\\t").Replace("\n", "\\n")}\",");
-                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
                     jsonSchema.AppendLine($"{indentString}    }}");
                 }
                 foreach (var item in ns.Bools) {
@@ -437,7 +435,6 @@ namespace {{namespaceName}}
                     jsonSchema.AppendLine($"{indentString}        \"type\": \"boolean\",");
                     if (item.DefaultValue.HasValue)
                         jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue.ToString().ToLower()},");
-                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
                     jsonSchema.AppendLine($"{indentString}    }}");
                 }
                 foreach (var item in ns.Doubles) {
@@ -451,7 +448,6 @@ namespace {{namespaceName}}
                     jsonSchema.AppendLine($"{indentString}        \"type\": \"number\",");
                     if (item.DefaultValue.HasValue)
                         jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
-                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
                     jsonSchema.AppendLine($"{indentString}    }}");
                 }
                 foreach (var item in ns.Longs) {
@@ -465,7 +461,6 @@ namespace {{namespaceName}}
                     jsonSchema.AppendLine($"{indentString}        \"type\": \"integer\",");
                     if (item.DefaultValue.HasValue)
                         jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
-                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
                     jsonSchema.AppendLine($"{indentString}    }}");
                 }
                 foreach (var item in ns.Decimals) {
@@ -479,7 +474,6 @@ namespace {{namespaceName}}
                     jsonSchema.AppendLine($"{indentString}        \"type\": \"number\",");
                     if (item.DefaultValue.HasValue)
                         jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
-                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
                     jsonSchema.AppendLine($"{indentString}    }}");
                 }
                 foreach (var item in ns.Floats) {
@@ -493,7 +487,6 @@ namespace {{namespaceName}}
                     jsonSchema.AppendLine($"{indentString}        \"type\": \"number\",");
                     if (item.DefaultValue.HasValue)
                         jsonSchema.AppendLine($"{indentString}        \"default\": {item.DefaultValue},");
-                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
                     jsonSchema.AppendLine($"{indentString}    }}");
                 }
                 foreach (var child in ns.Namespaces) {
@@ -517,7 +510,7 @@ namespace {{namespaceName}}
 
                     WriteJsonSchema(child, indent + 1);
                 }
-                jsonSchema.AppendLine($"{indentString}\"required\": [{string.Join(", ", ns.Namespaces.Where(IsRequired).Select(x => x.Name))}]");
+                jsonSchema.AppendLine($"{indentString}\"required\": [{string.Join(", ", ns.Namespaces.Where(IsRequired).Select(x => $"\"{x.Name}\""))}]");
             }
         }
         jsonSchema.AppendLine("""
