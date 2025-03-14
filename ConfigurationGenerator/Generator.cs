@@ -371,8 +371,8 @@ namespace {{namespaceName}}
                         WriteDescription(item.Description);
                     jsonSchema.AppendLine($"{indentString}        \"type\": \"string\",");
                     if (item.DefaultValue is not null)
-                        jsonSchema.AppendLine($"{indentString}        \"default\": \"{item.DefaultValue}\",");
-                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower().Replace("\t", "\\t").Replace("\n", "\\n")}");
+                        jsonSchema.AppendLine($"{indentString}        \"default\": \"{item.DefaultValue.Replace("\t", "\\t").Replace("\n", "\\n")}\",");
+                    jsonSchema.AppendLine($"{indentString}        \"required\": {item.Required.ToString().ToLower()}");
                     jsonSchema.AppendLine($"{indentString}    }},");
                 }
                 foreach (var item in ns.Bools) {
