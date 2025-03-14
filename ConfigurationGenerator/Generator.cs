@@ -389,7 +389,8 @@ namespace {{namespaceName}}
                                             .Concat(ns.Longs.Where(x => x.Required).Select(x => x.Name))
                                             .Concat(ns.Floats.Where(x => x.Required).Select(x => x.Name))
                                             .Concat(ns.Decimals.Where(x => x.Required).Select(x => x.Name))
-                                            .Concat(ns.Namespaces.Where(IsRequired).Select(x => x.Name));
+                                            .Concat(ns.Namespaces.Where(IsRequired).Select(x => x.Name))
+                                            .Select(x=>$"\"{x}\"");
 
                 jsonSchema.AppendLine($"{indentString}    \"required\": [{string.Join(", ",requiredProperties)}],");
                 bool isFirst = true;
