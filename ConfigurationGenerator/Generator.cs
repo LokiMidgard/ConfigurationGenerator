@@ -494,6 +494,7 @@ namespace {{namespaceName}}
 
                     WriteJsonSchema(child, indent + 1);
                 }
+                jsonSchema.AppendLine($"{indentString}}}");
                 indentString = new string(' ', (indent + 1) * 4);
                 jsonSchema.AppendLine($"{indentString}}}");
             } else {
