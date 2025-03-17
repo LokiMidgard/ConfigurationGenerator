@@ -520,7 +520,7 @@ namespace {{namespaceName}}
                 "properties": {
             """);
 
-        WriteJsonSchema(root, 1);
+        WriteJsonSchema(root, 2);
         jsonSchema.AppendLine("    },");
 
         jsonSchema.AppendLine($"    \"required\": [{string.Join(", ", root.Namespaces.Where(IsRequired).Select(x => $"\"{x.Name}\""))}]");
@@ -530,7 +530,7 @@ namespace {{namespaceName}}
         source.AppendLine($""""
         public static string JsonSchema => """
         {jsonSchema.ToString()}
-        """;    
+            """;    
         """");
 
         // now we add a method to check if all required fields and subsections are present
