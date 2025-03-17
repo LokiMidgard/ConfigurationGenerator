@@ -83,5 +83,5 @@ namespace MyNamespcae
 
 ## Todo
 
-- [ ] Add support to check for missing required properties at load time
+- [x] Add support to check for missing required properties at load time
 - [x] Generation of JSON schema

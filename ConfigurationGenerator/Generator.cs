@@ -520,7 +520,7 @@ namespace {{namespaceName}}
                 "properties": {
             """);
 
-        WriteJsonSchema(root, 1);
+        WriteJsonSchema(root, 2);
         jsonSchema.AppendLine("    },");
 
         jsonSchema.AppendLine($"    \"required\": [{string.Join(", ", root.Namespaces.Where(IsRequired).Select(x => $"\"{x.Name}\""))}]");
@@ -528,22 +528,113 @@ namespace {{namespaceName}}
         jsonSchema.AppendLine("}");
 
         source.AppendLine($""""
-        public static string JsonSchema => """
+            public static string JsonSchema => """
         {jsonSchema.ToString()}
-        """;    
+            """;    
         """");
 
+        // now we add a method to check if all required fields and subsections are present
 
+        source.AppendLine($$""""
+            public bool ValidateConfiguration(out System.Collections.Immutable.ImmutableArray<(string path,string type)> missingConfiguration) {
+        {{ValidateConfiguration(root, configurationVariable, 2)}}
+            }
+        """");
+        string ValidateConfiguration(ConfigurationDescriptionNamespace ns, string configurationVariable, int indent) {
+            StringBuilder source = new();
+            var indentString = new string(' ', indent * 4);
 
-        // // if the class doesn't implement INotifyPropertyChanged already, add it
-        // if (!classSymbol.Interfaces.Contains(notifySymbol, SymbolEqualityComparer.Default)) {
-        //     source.AppendLine("public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;");
-        // }
+            source.AppendLine($"{indentString}var errors = System.Collections.Immutable.ImmutableArray.CreateBuilder<(string, string)>();");
+            ValidateConfigurationInternal(ns, configurationVariable, indent, "", source);
+            source.AppendLine($"{indentString}missingConfiguration = errors.ToImmutable();");
+            source.AppendLine($"{indentString}return errors.Count == 0;");
+            return source.ToString();
+        }
+        void ValidateConfigurationInternal(ConfigurationDescriptionNamespace ns, string configurationVariable, int indent, string prefix, StringBuilder source) {
+            var indentString = new string(' ', indent * 4);
+            if (ns.Name is not null) {
+                prefix = prefix.Length > 0 ? $"{prefix}:{ns.Name}" : ns.Name;
+            }
+            foreach (var item in ns.Namespaces) {
+                if (prefix.Length > 0)
+                    source.AppendLine($"{indentString}if (config.GetSection(\"{prefix}\").GetChildren().Any(x=>x.Key == \"{item.Name}\")) {{");
+                else
+                    source.AppendLine($"{indentString}if (config.GetChildren().Any(x=>x.Key == \"{item.Name}\")) {{");
+                ValidateConfigurationInternal(item, configurationVariable, indent + 1, prefix, source);
+                if (IsRequired(item)) {
+                    source.AppendLine($"{indentString}}} else {{");
+                    if (prefix.Length > 0)
+                        source.AppendLine($"{indentString}    errors.Add((\"{prefix}:{item.Name}\", \"section\"));");
+                    else
+                        source.AppendLine($"{indentString}    errors.Add((\"{item.Name}\", \"section\"));");
+                }
+                source.AppendLine($"{indentString}}}");
+            }
 
-        // create properties for each field 
-        //foreach (var methodSymbol in methods) {
-        //    ProcessMethod(source, methodSymbol, attributeSymbol, attributeTransformerSymbol, context);
-        //}
+            foreach (var item in ns.Ints) {
+                if (item.Required) {
+                    var currentPath = prefix.Length > 0 ? $"{prefix}:{item.Name}" : item.Name;
+                    source.AppendLine($"{indentString}if ({configurationVariable}.GetValue<int?>(\"{currentPath}\") == null) {{");
+                    source.AppendLine($"{indentString}    errors.Add((\"{currentPath}\", \"int\"));");
+                    source.AppendLine($"{indentString}}}");
+                }
+            }
+
+            foreach (var item in ns.Strings) {
+                if (item.Required) {
+                    var currentPath = prefix.Length > 0 ? $"{prefix}:{item.Name}" : item.Name;
+                    source.AppendLine($"{indentString}if ({configurationVariable}.GetValue<string?>(\"{currentPath}\") == null) {{");
+                    source.AppendLine($"{indentString}    errors.Add((\"{currentPath}\", \"string\"));");
+                    source.AppendLine($"{indentString}}}");
+                }
+            }
+
+            foreach (var item in ns.Bools) {
+                if (item.Required) {
+                    var currentPath = prefix.Length > 0 ? $"{prefix}:{item.Name}" : item.Name;
+                    source.AppendLine($"{indentString}if ({configurationVariable}.GetValue<bool?>(\"{currentPath}\") == null) {{");
+                    source.AppendLine($"{indentString}    errors.Add((\"{currentPath}\", \"bool\"));");
+                    source.AppendLine($"{indentString}}}");
+                }
+            }
+
+            foreach (var item in ns.Floats) {
+                if (item.Required) {
+                    var currentPath = prefix.Length > 0 ? $"{prefix}:{item.Name}" : item.Name;
+                    source.AppendLine($"{indentString}if ({configurationVariable}.GetValue<float?>(\"{currentPath}\") == null) {{");
+                    source.AppendLine($"{indentString}    errors.Add((\"{currentPath}\", \"float\"));");
+                    source.AppendLine($"{indentString}}}");
+                }
+            }
+
+            foreach (var item in ns.Doubles) {
+                if (item.Required) {
+                    var currentPath = prefix.Length > 0 ? $"{prefix}:{item.Name}" : item.Name;
+                    source.AppendLine($"{indentString}if ({configurationVariable}.GetValue<double?>(\"{currentPath}\") == null) {{");
+                    source.AppendLine($"{indentString}    errors.Add((\"{currentPath}\", \"double\"));");
+                    source.AppendLine($"{indentString}}}");
+                }
+            }
+
+            foreach (var item in ns.Longs) {
+                if (item.Required) {
+                    var currentPath = prefix.Length > 0 ? $"{prefix}:{item.Name}" : item.Name;
+                    source.AppendLine($"{indentString}if ({configurationVariable}.GetValue<long?>(\"{currentPath}\") == null) {{");
+                    source.AppendLine($"{indentString}    errors.Add((\"{currentPath}\", \"long\"));");
+                    source.AppendLine($"{indentString}}}");
+                }
+            }
+
+            foreach (var item in ns.Decimals) {
+                if (item.Required) {
+                    var currentPath = prefix.Length > 0 ? $"{prefix}:{item.Name}" : item.Name;
+                    source.AppendLine($"{indentString}if ({configurationVariable}.GetValue<decimal?>(\"{currentPath}\") == null) {{");
+                    source.AppendLine($"{indentString}    errors.Add((\"{currentPath}\", \"decimal\"));");
+                    source.AppendLine($"{indentString}}}");
+                }
+            }
+
+        }
 
         source.AppendLine("} }");
         return source.ToString();

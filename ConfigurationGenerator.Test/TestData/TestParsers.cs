@@ -11,6 +11,13 @@ internal partial class TestParsers(ConfigDumy config) {
 
 internal class ConfigDumy {
     public Dictionary<string, object> Data { get; } = new();
+
+    public string Key => throw new NotImplementedException("Need to make tests for this");
+
+    public IEnumerable<ConfigDumy> GetChildren() {
+        return [this];// this is not yet correct
+    }
+
     public T GetValue<T>(string key) {
         if (Data.TryGetValue(key, out var value)) {
             return (T)value;
