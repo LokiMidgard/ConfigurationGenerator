@@ -520,7 +520,7 @@ namespace {{namespaceName}}
                 "properties": {
             """);
 
-        WriteJsonSchema(root, 2);
+        WriteJsonSchema(root, 1);
         jsonSchema.AppendLine("    },");
 
         jsonSchema.AppendLine($"    \"required\": [{string.Join(", ", root.Namespaces.Where(IsRequired).Select(x => $"\"{x.Name}\""))}]");
@@ -528,9 +528,9 @@ namespace {{namespaceName}}
         jsonSchema.AppendLine("}");
 
         source.AppendLine($""""
-            public static string JsonSchema => """
+        public static string JsonSchema => """
         {jsonSchema.ToString()}
-            """;    
+        """;    
         """");
 
         // now we add a method to check if all required fields and subsections are present
@@ -557,9 +557,9 @@ namespace {{namespaceName}}
             }
             foreach (var item in ns.Namespaces) {
                 if (prefix.Length > 0)
-                    source.AppendLine($"{indentString}if (config.GetSection(\"{prefix}\").GetChildren().Any(x=>x.Key == \"{item.Name}\")) {{");
+                    source.AppendLine($"{indentString}if ({configurationVariable}.GetSection(\"{prefix}\").GetChildren().Any(x=>x.Key == \"{item.Name}\")) {{");
                 else
-                    source.AppendLine($"{indentString}if (config.GetChildren().Any(x=>x.Key == \"{item.Name}\")) {{");
+                    source.AppendLine($"{indentString}if ({configurationVariable}.GetChildren().Any(x=>x.Key == \"{item.Name}\")) {{");
                 ValidateConfigurationInternal(item, configurationVariable, indent + 1, prefix, source);
                 if (IsRequired(item)) {
                     source.AppendLine($"{indentString}}} else {{");
